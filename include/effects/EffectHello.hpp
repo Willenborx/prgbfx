@@ -1,3 +1,13 @@
+/**
+ * @file EffectHello.hpp
+ * @author Holger Willenborg (holger@willenb.org)
+ * @brief Hello Effecft demonstration
+ * @version 0.5
+ * @date 2023-11-01
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
 
 #ifndef EFFECTHELLO_HPP
 #define EFFECTHELLO_HPP

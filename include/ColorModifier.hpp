@@ -3,8 +3,8 @@
  * @author Holger Willenborg (holger@willenb.org)
  * @brief   ColorModifiers  are called during effect calculation. They can be used to modify colors for each frame. The abstract class provides the modify() member function which must be
  *          implemented in derived classes- A color is sent into the modify() function and it must return the modified color.
- * @version 0.1
- * @date 2023-05-13
+ * @version 0.5
+ * @date 2023-11-01
  * 
  * @copyright Copyright (c) 2023
  * 

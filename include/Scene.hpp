@@ -4,8 +4,8 @@
  * @brief   This class implements the "Scene" which controls the Effect chain. 
  *          Effects are added to the Scene and the Scene is calculating the frames from the 
  *          list of Effects. It also checks if effects are expired and removes them from the scene.
- * @version 0.1
- * @date    2022-03-12
+ * @version 0.5
+ * @date    2022-11-01
  * 
  * @copyright Copyright (c) 2022
  * 

@@ -3,8 +3,8 @@
  * @author Holger Willenborg
  * @brief A Shape is some object that can be painted into a rectangular area. The effect control may modify the position and size
  *        of a shape at any time so any implementation needs to be able to draw the shape into any reactangle
- * @version 0.1
- * @date 2023-05-06
+ * @version 0.5
+ * @date 2023-11-01
  * 
  * @copyright Copyright (c) 2023
  * 

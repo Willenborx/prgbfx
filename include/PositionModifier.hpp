@@ -2,8 +2,8 @@
  * @file PositionModifier.hpp
  * @author Holger Willenborg (holger@willenb.org)
  * @brief Allows to modify the position / size of a shape depending on a timestamp
- * @version 0.1
- * @date 2023-05-06
+ * @version 0.5
+ * @date 2023-11-01
  * 
  * @copyright Copyright (c) 2023
  * 

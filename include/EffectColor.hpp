@@ -1,3 +1,15 @@
+/**
+ * @file EffectColor.hpp
+ * @author Holger Willenborg (holger@willenb.org)
+ * @brief The color can change over time, or it can change depending on loudness. This file contains some basic EffectColor derived classes to implement
+ *        different behaviours.
+ * @version 0.5
+ * @date 2023-11-01
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
+
 #ifndef PRGBFX_EffectColor_hpp
 #define PRGBFX_EffectColor_hpp
 

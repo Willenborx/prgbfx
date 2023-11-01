@@ -1,3 +1,14 @@
+/**
+ * @file EffectLoudnessLines.hpp
+ * @author Holger Willenborg (holger@willenb.org)
+ * @brief Lines that change color depending on the measured loudness
+ * @version 0.5
+ * @date 2023-11-01
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
+
 #ifndef EffectLoudnessLines_HPP
 #define EffectLoudnessLines_HPP
 

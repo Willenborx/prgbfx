@@ -2,8 +2,8 @@
  * @file Effect.hpp
  * @author Holger Willenborg (holger@willenb.org)
  * @brief Implementation of an "effect". The calculateEffect member function will be called to draw the effect depending on the current timestamp
- * @version 0.1
- * @date 2023-05-06
+ * @version 0.5
+ * @date 2023-11-01
  * 
  * @copyright Copyright (c) 2023
  * 

@@ -2,8 +2,8 @@
  * @file Limiter.hpp
  * @author Holger Willenborg (holger@willenb.org)
  * @brief Class template to limit the input value to a defined maximum 
- * @version 0.1
- * @date 2023-05-06
+ * @version 0.5
+ * @date 2023-11-01
  * 
  * @copyright Copyright (c) 2023
  * 

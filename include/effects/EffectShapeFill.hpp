@@ -1,3 +1,14 @@
+/**
+ * @file EffectShapeFill.hpp
+ * @author Holger Willenborg (holger@willenb.org)
+ * @brief Effect just showing a \link Shape \endlink
+ * @version 0.5
+ * @date 2023-11-01
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
+
 #ifndef EffectShapeFill_hpp
 #define EffectShapeFill_hpp
 

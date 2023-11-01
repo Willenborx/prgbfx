@@ -1,3 +1,14 @@
+/**
+ * @file EffectFountain.hpp
+ * @author Holger Willenborg (holger@willenb.org)
+ * @brief 
+ * @version 0.5
+ * @date 2023-11-01
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
+
 #ifndef EffectFountain_hpp
 #define EffectFountain_hpp
 

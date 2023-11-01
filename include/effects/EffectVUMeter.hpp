@@ -1,9 +1,9 @@
 /**
  * @file EffectVUMeter.hpp
  * @author Holger Willenborg (holger@willenb.org)
- * @brief A simple VU effect
- * @version 0.1
- * @date 2023-05-13
+ * @brief A simple VU effect displaying the measurings of the 6 bands used by \link LoudnessBase \link
+ * @version 0.5
+ * @date 2023-11-01
  * 
  * @copyright Copyright (c) 2023
  * 

@@ -2,8 +2,8 @@
  * @file ColorModifierLoudness.hpp
  * @author Holger Willenborg (holger@willenb.org)
  * @brief Modifies the brightness of a color according to the loudness
- * @version 0.1
- * @date 2023-05-13
+ * @version 0.5
+ * @date 2023-11-01
  * 
  * @copyright Copyright (c) 2023
  * 

@@ -3,8 +3,8 @@
  * @author Holger Willenborg (holger@willenb.org)
  * @brief  Soundobserver continuously collects sound data to assess certain parameters of the music. It sets flags which may be used to 
  *         select the next effect or to spawn new effects
- * @version 0.1
- * @date 2023-05-17
+ * @version 0.5
+ * @date 2023-11-01
  * 
  * @copyright Copyright (c) 2023
  */
