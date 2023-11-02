@@ -22,7 +22,7 @@ namespace prgbfx {
 
     /**
      * @brief This class will be called when displaying a frame. It collects and assesses the sound data provided
-     *        by the @link ldbase::LoudnessBase @endlink class (Loudness / Frequency Band information), sets flags and provides
+     *        by the @link LoudnessBase @endlink class (Loudness / Frequency Band information), sets flags and provides
      *        data to help spawn the next effect or to select proper followup effects
      */
     class SoundObserver {

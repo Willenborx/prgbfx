@@ -14,5 +14,4 @@ target_include_directories(${PROJECT_NAME}
 	INTERFACE
 	   include
         include/effects
-        ../prgbld/include  # #ugly
 )

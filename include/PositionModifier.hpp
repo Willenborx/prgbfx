@@ -19,7 +19,6 @@
 namespace prgbfx {
 
     using namespace prgb;
-    using namespace ldbase;
 
     /**
      * @brief Effect that use the PositionModifier can use modifiers derived from this class to
