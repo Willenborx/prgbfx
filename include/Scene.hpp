@@ -52,35 +52,33 @@ namespace prgbfx {
                 ~Scene() { LOG("Scene: Destruct");};
 
                 /// @brief runs the scene and calculates the frames. Calls PreFrame, PreEffect, PostEffect, PreCommit, PostFrame which may be
-                ///        implemented in derived classes to do specific actions during the run. runScene is not supposed to return. a call to this
-                ///         member function does not ever return unless stop() is called. runScene always uses the active EffectChain
+                ///        implemented in derived classes to do specific actions during the run. runScene needs to be run in an infinite loop
+                ///        that checks is_stopped(). runScene uses the active EffectChain
                 void runScene() {
-                    while (!bStop) {
-                        ar.fill_all(RGBW(0,0,0,0));
-                        TimeMS delta = tb.get_deltatime_ms();
+                    ar.fill_all(RGBW(0,0,0,0));
+                    TimeMS delta = tb.get_deltatime_ms();
 
-                        pre_frame(delta);
-                        fx_chain->pre_frame(delta);
+                    pre_frame(delta);
+                    fx_chain->pre_frame(delta);
 
-                        std::vector<Effect *> *fx_list = fx_chain->get_effects_list();
-                        for (std::vector<Effect *>::iterator it = fx_list->begin(); it != fx_list->end(); ) {
-                            Effect *e = *it;
-                            pre_effect(delta,e);
-                            e->render_effect(delta);
-                            if (e->has_ended()) { it = fx_list->erase(it); } else { ++it; }
-                            post_effect(delta,e);
-                        }
-
-                        frames++;
-                        pre_commit(delta);
-                        ar.commit_buffer();
-
-                        // collect sound data into the observer
-                        observe.collectSoundData(delta);
-
-                        post_frame(delta);
-                        fx_chain->post_frame(delta);
+                    std::vector<Effect *> *fx_list = fx_chain->get_effects_list();
+                    for (std::vector<Effect *>::iterator it = fx_list->begin(); it != fx_list->end(); ) {
+                        Effect *e = *it;
+                        pre_effect(delta,e);
+                        e->render_effect(delta);
+                        if (e->has_ended()) { it = fx_list->erase(it); } else { ++it; }
+                        post_effect(delta,e);
                     }
+
+                    frames++;
+                    pre_commit(delta);
+                    ar.commit_buffer();
+
+                    // collect sound data into the observer
+                    observe.collectSoundData(delta);
+
+                    post_frame(delta);
+                    fx_chain->post_frame(delta);
                 };
 
                 LightArray& get_array() { return this->ar; }
@@ -117,7 +115,10 @@ namespace prgbfx {
                 inline virtual void post_effect(TimeMS time_delta, Effect *e) {}
 
                 /// @brief stops the scene
-                inline void stop() { bStop = true; }
+                inline void stop() { bStop = true; } 
+
+                /// @brief return true if scene is top be stopped
+                inline bool is_stopped() { return bStop; }
 
     };
 };
