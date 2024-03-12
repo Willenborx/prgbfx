@@ -29,7 +29,7 @@ namespace prgbfx {
     class EffectChain {
 
         public:
-            EffectChain(LightArray& ar, LoudnessBase& lb, SoundObserver& ob) : ar(ar), lb(lb),ob(ob) { 
+            EffectChain(LightArray* ar, LoudnessBase& lb, SoundObserver& ob) : ar(ar), lb(lb),ob(ob) { 
                 LOG("EffectChain: Constructor");
             };
             
@@ -49,7 +49,7 @@ namespace prgbfx {
 
         protected:
             std::unique_ptr<std::vector<Effect *>> effects = std::make_unique<std::vector<Effect *>>();
-            LightArray& ar;
+            LightArray* ar;
             LoudnessBase& lb;
             SoundObserver& ob;
     };

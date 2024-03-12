@@ -22,14 +22,14 @@ namespace prgbfx
     /// @brief Implements an @linkeffect that creates and shifts lines with brightness related to the current loudness
     class EffectLoudnessLines : public Effect {
         public:
-            EffectLoudnessLines(LightArray& ar, LoudnessBase& lb, LoudnessMode ldmode, RectArea& box, Direction direction, TimeMS delay_ms, 
-                                EffectColor& color, EffectColor& color_bg,ColorModifiers colmods={}, ColorModifiers colbgmods={}) 
+            EffectLoudnessLines(LightArray* ar, LoudnessBase& lb, LoudnessMode ldmode, RectArea& box, Direction direction, TimeMS delay_ms, 
+                                EffectColor* color, EffectColor* color_bg,ColorModifiers colmods={}, ColorModifiers colbgmods={}) 
                 : Effect(ar), lb(lb), ldmode(ldmode), box(box), direction(direction), delay_ms(delay_ms), color(color), color_bg(color_bg),colmods(colmods), colbgmods(colbgmods) {
                 LOG(" EffectLoudnessLines: Construct");
                 Dimension extent = get_extent();
                 linecolors.reserve(extent);
                 for (int i=0; i < extent; i++) {
-                    linecolors[i] = color_bg.get_color(0,0);
+                    linecolors[i] = color_bg->get_color(0,0);
                     for (auto cmod : colbgmods) { 
                         linecolors[i] = cmod->modify(linecolors[i],0);
                     }
@@ -49,11 +49,11 @@ namespace prgbfx
 
                 int16_t idx = position / delay_ms;
 
-                ColorValue color_bgnew = color_bg.get_color(time_delta);
+                ColorValue color_bgnew = color_bg->get_color(time_delta);
                 for (auto cmod : colbgmods) { 
                     color_bgnew = cmod->modify(color_bgnew,time_delta);
                 }
-                ColorValue color_new = prgb::gradient(color_bgnew,color.get_color(time_delta),fadeval,100);
+                ColorValue color_new = prgb::gradient(color_bgnew,color->get_color(time_delta),fadeval,100);
                 for (auto cmod : colmods) { 
                     color_new = cmod->modify(color_new,time_delta); 
                 }
@@ -65,16 +65,16 @@ namespace prgbfx
                     for (int j=0; j<getLineLength(); j++) {
                         switch(direction) {
                             case DIR_Right:
-                                ar.set_pixel(Point(box.origin.x+i,box.origin.y+j),linecolors[(idx-i+extent)%extent],CMODE_Set);
+                                ar->set_pixel(Point(box.origin.x+i,box.origin.y+j),linecolors[(idx-i+extent)%extent],CMODE_Set);
                                 break;
                             case DIR_Left:
-                                ar.set_pixel(Point(box.origin.x+box.size.w-i-1,box.origin.y+j),linecolors[(idx-i+extent)%extent],CMODE_Set);
+                                ar->set_pixel(Point(box.origin.x+box.size.w-i-1,box.origin.y+j),linecolors[(idx-i+extent)%extent],CMODE_Set);
                                 break;
                             case DIR_Down:
-                                ar.set_pixel(Point(box.origin.x+j,box.origin.y+i),linecolors[(idx-i+extent)%extent],CMODE_Set);
+                                ar->set_pixel(Point(box.origin.x+j,box.origin.y+i),linecolors[(idx-i+extent)%extent],CMODE_Set);
                                 break;
                             case DIR_Up:
-                                ar.set_pixel(Point(box.origin.x+j,box.origin.y+box.size.h-i-1),linecolors[(idx-i+extent)%extent],CMODE_Set);
+                                ar->set_pixel(Point(box.origin.x+j,box.origin.y+box.size.h-i-1),linecolors[(idx-i+extent)%extent],CMODE_Set);
                                 break;
                             
                         }
@@ -93,8 +93,8 @@ namespace prgbfx
             Direction direction;
             TimeMS delay_ms;
             ColorPalette linecolors;
-            EffectColor& color; 
-            EffectColor& color_bg;
+            EffectColor* color; 
+            EffectColor* color_bg;
             const ColorModifiers colmods;
             const ColorModifiers colbgmods;
 

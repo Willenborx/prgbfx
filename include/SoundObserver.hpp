@@ -69,8 +69,7 @@ namespace prgbfx {
 
                     // \todo hysteresis: Silence -> <60dB, no Silence -> >63dB                    
                     if (lb.get_loudness_db(LD_Realtime) >= (ld_env + 3.0)) {
-                        flags |= (1 << SO_LoudnessPeak);
-                        set_flag(SO_LoudnessPeak);
+                        if (!is_flag_set(SO_Silence)) set_flag(SO_LoudnessPeak);
                     } else {
                         clear_flag(SO_LoudnessPeak);
                         clear_flag(SO_NoBass);

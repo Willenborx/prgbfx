@@ -29,10 +29,10 @@ class EffectVUMeter : public Effect {
     Dimension distance, offset;
     LoudnessBase& lb;
     RectArea box;
-    EffectColor& color;
+    EffectColor* color;
 
     public:
-        EffectVUMeter(LightArray& ar, LoudnessBase& lb, RectArea box, EffectColor& color, int VUdelay=200) : Effect(ar), lb(lb), box(box), color(color) {
+        EffectVUMeter(LightArray* ar, LoudnessBase& lb, RectArea box, EffectColor* color, int VUdelay=200) : Effect(ar), lb(lb), box(box), color(color) {
             LOG(" EffectVUMeter: Construct");
             for (int i = 0; i < 6; i++) { 
                 bandsoft[i].set_delay(VUdelay); 
@@ -61,12 +61,12 @@ class EffectVUMeter : public Effect {
                 //Loudness sftmax = mxsoft.value(time_delta,maxld);
                 Loudness sftlevel = normalize<Loudness,100>(bandsoft[i].value(time_delta,bandval[current][i]),maxld,box.size.h);
                 
-                ar.fill_rect(
+                ar->fill_rect(
                         box.origin.x+distance*i+offset,
                         box.origin.y,
                         distance-1,
                         sftlevel,
-                        color.get_color(time_delta),CMODE_Set);
+                        color->get_color(time_delta),CMODE_Set);
                 
 
             }

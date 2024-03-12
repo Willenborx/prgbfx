@@ -31,7 +31,7 @@ namespace prgbfx {
     class EffectGradient : public Effect {
     
             public:
-            EffectGradient(LightArray& ar, RectArea& box, Point& pt_center, const PositionModifiers posmods, EffectColor& color, uint8_t brightness=100) 
+            EffectGradient(LightArray* ar, RectArea& box, Point& pt_center, const PositionModifiers posmods, EffectColor* color, uint8_t brightness=100) 
                 : Effect(ar), box(box), pt_center(pt_center), posmods(posmods), color(color), brightness(brightness) {
                     LOG("EffectGradient: Construct");
                     Dimension width = box.size.w << 7; // multiplier for more granularity - will be related to dist_max later on (using the same mulitplier)
@@ -46,8 +46,8 @@ namespace prgbfx {
                     rect = pos->calc_shape(time_delta,Point(rect.origin),Size(1,1));
                 }
 
-                ColorValue color_current = color.get_color(time_delta);
-                ColorValue color_next = color.get_color(time_delta,2);
+                ColorValue color_current = color->get_color(time_delta);
+                ColorValue color_next = color->get_color(time_delta,2);
                 if (!enabled) return;
 
                 // Loop through all pixels
@@ -60,7 +60,7 @@ namespace prgbfx {
                         Dimension dist = sqrt(xdist*xdist+ydist*ydist);
                         ColorValue color_new = prgb::dim(prgb::gradient(color_current,color_next,dist,dist_max),brightness);
 
-                        ar.set_pixel(Point(box.origin.x+x, box.origin.y+y), color_new, CMODE_Set);
+                        ar->set_pixel(Point(box.origin.x+x, box.origin.y+y), color_new, CMODE_Set);
                     }
                 }
 
@@ -70,7 +70,7 @@ namespace prgbfx {
             RectArea &box;
             Point &pt_center;
             const PositionModifiers posmods;
-            EffectColor& color;
+            EffectColor* color;
             uint8_t brightness;
             Dimension dist_max;
 

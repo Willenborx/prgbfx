@@ -43,13 +43,13 @@ namespace prgbfx {
         TimeMS time_last_spawn = 0;
         TimeMS time_spawn_delay;
         LoudnessBase &lb;
-        EffectColor& color;
+        EffectColor* color;
 
-        RectArea box = ar.get_geometry().get_canvas();
+        RectArea box = ar->get_geometry().get_canvas();
         Softener<Loudness> ldsoft = Softener<Loudness>(2000);
 
         public:
-            EffectFountain(LightArray& ar, TimeMS time_spawn_delay, LoudnessBase &lb, EffectColor& color) : EffectArrayAbstract(ar), time_spawn_delay(time_spawn_delay), lb(lb), color(color) { }
+            EffectFountain(LightArray* ar, TimeMS time_spawn_delay, LoudnessBase &lb, EffectColor* color) : EffectArrayAbstract(ar), time_spawn_delay(time_spawn_delay), lb(lb), color(color) { }
 
             void render_effect(TimeMS time_delta) {
 
@@ -70,7 +70,7 @@ namespace prgbfx {
                                     xspeed,
                                     yspeed,
                                     delta,
-                                    color.get_color(delta)})
+                                    color->get_color(delta)})
                         );
                     }
 
@@ -80,7 +80,7 @@ namespace prgbfx {
 
                 const int gravity = 35;
 
-                for_each([this,delta](FountainParticle item){
+                for_each([this,delta](FountainParticle& item){
 
                         TimeMS delta_item = delta-item.time_spawn;
 
@@ -93,11 +93,11 @@ namespace prgbfx {
                             return false;
                         }
                         if ((y < box.size.h)) {
-                            ar.set_pixel(Point(x,y),item.color,CMODE_Transparent,opacity);
-                            ar.set_pixel(Point(x-1,y),faded,CMODE_Transparent,opacity);
-                            ar.set_pixel(Point(x+1,y),faded,CMODE_Transparent,opacity);
-                            if (y+1 < box.size.h) ar.set_pixel(Point(x,y+1),faded,CMODE_Transparent,opacity);
-                            if (y > 0) ar.set_pixel(Point(x,y-1),faded,CMODE_Transparent,opacity);
+                            ar->set_pixel(Point(x,y),item.color,CMODE_Transparent,opacity);
+                            ar->set_pixel(Point(x-1,y),faded,CMODE_Transparent,opacity);
+                            ar->set_pixel(Point(x+1,y),faded,CMODE_Transparent,opacity);
+                            if (y+1 < box.size.h) ar->set_pixel(Point(x,y+1),faded,CMODE_Transparent,opacity);
+                            if (y > 0) ar->set_pixel(Point(x,y-1),faded,CMODE_Transparent,opacity);
                         }
                         return true;
                     });

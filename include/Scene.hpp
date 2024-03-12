@@ -37,7 +37,7 @@ namespace prgbfx {
     class Scene {
             protected:
                 TimeBase& tb;
-                LightArray& ar;
+                LightArray* ar;
                 EffectChain *fx_chain = nullptr;
 
                 LoudnessBase& lb;
@@ -48,14 +48,14 @@ namespace prgbfx {
                 bool bStop = false;
 
             public:
-                Scene(LightArray& ar, TimeBase& tb, LoudnessBase& lb): tb(tb),ar(ar),lb(lb) { LOG("Scene: Construct");};
+                Scene(LightArray* ar, TimeBase& tb, LoudnessBase& lb): tb(tb),ar(ar),lb(lb) { LOG("Scene: Construct");};
                 ~Scene() { LOG("Scene: Destruct");};
 
                 /// @brief runs the scene and calculates the frames. Calls PreFrame, PreEffect, PostEffect, PreCommit, PostFrame which may be
                 ///        implemented in derived classes to do specific actions during the run. runScene needs to be run in an infinite loop
                 ///        that checks is_stopped(). runScene uses the active EffectChain
                 void runScene() {
-                    ar.fill_all(RGBW(0,0,0,0));
+                    ar->fill_all(RGBW(0,0,0,0));
                     TimeMS delta = tb.get_deltatime_ms();
 
                     pre_frame(delta);
@@ -72,7 +72,7 @@ namespace prgbfx {
 
                     frames++;
                     pre_commit(delta);
-                    ar.commit_buffer();
+                    ar->commit_buffer();
 
                     // collect sound data into the observer
                     observe.collectSoundData(delta);
@@ -81,7 +81,7 @@ namespace prgbfx {
                     fx_chain->post_frame(delta);
                 };
 
-                LightArray& get_array() { return this->ar; }
+                LightArray* get_array() { return this->ar; }
                 TimeBase& get_timebase() { return tb; }
 
                 /// @brief  get_frame_count for statistical reasons

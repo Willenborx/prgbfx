@@ -36,11 +36,11 @@ namespace prgbfx {
         protected:
             bool ended = false;
             bool enabled = true;
-            LightArray& ar;
+            LightArray* ar;
             TimeMS time_start; // \todo review
 
         public:
-            Effect(LightArray& ar) : ar(ar) { LOG("Effect: Construct"); time_start=ar.get_timebase().get_deltatime_ms();};
+            Effect(LightArray* ar) : ar(ar) { LOG("Effect: Construct"); time_start=ar->get_timebase().get_deltatime_ms();};
             virtual ~Effect() { LOG("Effect: Destruct"); }
             
             virtual void render_effect(TimeMS time_delta) = 0;

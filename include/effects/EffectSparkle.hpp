@@ -43,7 +43,7 @@ namespace prgbfx {
         RectArea box;
         uint16_t density;
 
-        EffectColor& color;
+        EffectColor* color;
         ColorModifiers colmods;
 
         Softener<Loudness> peak = Softener<Loudness>(1000);
@@ -57,7 +57,7 @@ namespace prgbfx {
         public:
 
 
-            EffectSparkle(LightArray& ar, LoudnessBase& lb, const RectArea& box, uint16_t density, EffectColor& color, ColorModifiers colmods, TimeMS min_spark_duration=20, TimeMS max_spark_duration=180) 
+            EffectSparkle(LightArray* ar, LoudnessBase& lb, const RectArea& box, uint16_t density, EffectColor* color, ColorModifiers colmods, TimeMS min_spark_duration=20, TimeMS max_spark_duration=180) 
                     : EffectArrayAbstract(ar), lb(lb), box(box), density(density), color(color), colmods(colmods),min_spark_duration(min_spark_duration), max_spark_duration(max_spark_duration) { 
                 avg_spark_duration = min_spark_duration + (max_spark_duration-min_spark_duration)/2;
                 delay_sparkles1000 = (int32_t)(((int64_t)1000*1000*avg_spark_duration) / (int64_t) (box.size.h*box.size.w*density));
@@ -80,7 +80,8 @@ namespace prgbfx {
                     int32_t num_sparks = (int32_t)(1000*(int32_t)(time_delta - last_sparkle) / (int32_t) delay_sparkles1000);
                     if (num_sparks > 0) LOG("  EffectSparkle: Adding effects -> "+std::to_string(num_sparks));
 
-                    for (int32_t i = 0; i < std::min(num_sparks,(int32_t) 100) ; i++) { // #desperate attempt to fix a crash
+//                    for (int32_t i = 0; i < std::min(num_sparks,(int32_t) 100) ; i++) { // #desperate attempt to fix a crash
+                    for (int32_t i = 0; i < num_sparks ; i++) { 
                         additem     (Spark(
                                         {   
                                             Point(rand()%box.size.w,rand()%box.size.h),
@@ -94,14 +95,14 @@ namespace prgbfx {
 
                 hibernate = !enabled;
 
-                ColorValue color_new = color.get_color(time_delta);
+                ColorValue color_new = color->get_color(time_delta);
 
                 for (auto cmod : colmods) {
                         color_new = cmod->modify(color_new,time_delta);
                 }
                 LOG("  EffectSparkle: Start output: Size -> "+std::to_string(items.size()));
                 
-                for_each([this, time_delta, color_new](Spark spark){
+                for_each([this, time_delta, color_new](Spark& spark){
                     if (time_delta-spark.time_start >= spark.delay) {
                         // LOG("  EffectSparkle: Erase Spark");
                         return false;
@@ -111,7 +112,7 @@ namespace prgbfx {
 
                         opacity = (opacity > 100) ? 100 : opacity; // : (opacity > 1000) ? 0 : opacity; /// \todo evaluate
 
-                        ar.set_pixel(
+                        ar->set_pixel(
                                 Point(spark.origin.x+box.origin.x,spark.origin.y+box.origin.y),
                                 color_new,
                                 CMODE_Transparent,

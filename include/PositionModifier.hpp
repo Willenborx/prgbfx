@@ -26,7 +26,7 @@ namespace prgbfx {
      */
     class PositionModifier {
         public:
-            PositionModifier(LightArray& ar) : ar(ar) { LOG("PositionModifier: Construct");};
+            PositionModifier(LightArray* ar) : ar(ar) { LOG("PositionModifier: Construct");};
             virtual RectArea calc_shape(TimeMS time_delta, Point origin, Size size) { 
                 return { 
                     {origin.x, origin.y},
@@ -35,7 +35,7 @@ namespace prgbfx {
             };
             virtual ~PositionModifier() {LOG("PositionModifier: Destruct");};
         protected:
-            LightArray& ar;
+            LightArray* ar;
     };
 
     typedef PositionModifier PositionModifierStatic;
@@ -44,7 +44,7 @@ namespace prgbfx {
 /*    class PositionModifierLinearMotion : public PositionModifier {
         
         public:
-            PositionModifierLinearMotion(LightArray& ar, RectArea box, TimeMS delay_x_ms, TimeMS delay_y_ms):  PositionModifier(ar),  delay_x_ms(delay_x_ms), delay_y_ms(delay_y_ms), box(box) { LOG(" PositionModifierLinearMotion: Construct");};
+            PositionModifierLinearMotion(LightArray* ar, RectArea box, TimeMS delay_x_ms, TimeMS delay_y_ms):  PositionModifier(ar),  delay_x_ms(delay_x_ms), delay_y_ms(delay_y_ms), box(box) { LOG(" PositionModifierLinearMotion: Construct");};
             virtual RectArea calc_shape(TimeMS time_delta, Point origin, Size size) {
                 Point origin_mod = origin;
                 Size size_mod = size;
@@ -78,7 +78,7 @@ namespace prgbfx {
     class PositionModifierSine : public PositionModifier {
 
         public:
-            PositionModifierSine(LightArray &ar, RectArea box, Point initial, TimeMS delay_x_ms, TimeMS delay_y_ms) 
+            PositionModifierSine(LightArray *ar, RectArea box, Point initial, TimeMS delay_x_ms, TimeMS delay_y_ms) 
                 : PositionModifier(ar), initial(initial), delay_x_ms(delay_x_ms), delay_y_ms(delay_y_ms), box(box)
                 {LOG(" PositionModifierSine: Construct");};
             virtual ~PositionModifierSine() {LOG(" PositionModifierSine: Destruct");}
@@ -111,7 +111,7 @@ namespace prgbfx {
     class PositionModifierSizeLoudness : public PositionModifier {
 
         public:
-            PositionModifierSizeLoudness(LightArray& ar, LoudnessBase& lb, LoudnessMode ldmode, SizeLoudnessMode slmodew=SIZELD_Beginning, SizeLoudnessMode slmodeh=SIZELD_Beginning, TimeMS glow=200) 
+            PositionModifierSizeLoudness(LightArray* ar, LoudnessBase& lb, LoudnessMode ldmode, SizeLoudnessMode slmodew=SIZELD_Beginning, SizeLoudnessMode slmodeh=SIZELD_Beginning, TimeMS glow=200) 
                 : PositionModifier(ar), lb(lb), ldmode(ldmode), slmodew(slmodew), slmodeh(slmodeh), glow(glow) {LOG(" PositionModifierSizeLoudness: Construct");};
         
             virtual ~PositionModifierSizeLoudness() {LOG(" PositionModifierSizeLoudness: Destruct");}
@@ -179,7 +179,7 @@ namespace prgbfx {
   /// @brief resizes a shape if dimension falls below a minimum size
   class PositionModifierMinSize : public PositionModifier {
         public:
-            PositionModifierMinSize(LightArray& ar, Size size_min) : PositionModifier(ar), size_min(size_min) {LOG(" PositionModifierMinSize: Construct");}
+            PositionModifierMinSize(LightArray* ar, Size size_min) : PositionModifier(ar), size_min(size_min) {LOG(" PositionModifierMinSize: Construct");}
             RectArea calc_shape(TimeMS time_delta, Point origin, Size size) {
                 Size size_new = 
                     Size(

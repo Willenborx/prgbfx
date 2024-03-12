@@ -26,7 +26,7 @@ namespace prgbfx {
         Shape& shape;
 
         public:
-            EffectShapeFill(LightArray& ar, Shape& shape) 
+            EffectShapeFill(LightArray* ar, Shape& shape) 
                 : Effect(ar), shape(shape)  { LOG(" EffectShapeFill: Construct"); }
             virtual ~EffectShapeFill() { LOG (" EffectShapeFill: Destruct");}
             virtual void render_effect(TimeMS time_delta) { 

@@ -36,10 +36,9 @@ namespace prgbfx {
      */
     class Shape {
         public:
-            //Shape(LightArray& ar, Point origin, Size size, vector<PositionModifier *>posmods, EffectColor& color, ColorMode mode=CMODE_Set);
-            Shape(LightArray& ar, RectArea box, PositionModifiers posmods, EffectColor& color, ColorMode mode=CMODE_Set, ColorModifiers colmods={}, int8_t opacity=100)
-                     : ar(ar), origin(box.origin), size(box.size), posmods(posmods), color(color), mode_color(mode), opacity(opacity) {
-                this->colmods = colmods;
+            //Shape(LightArray* ar, Point origin, Size size, vector<PositionModifier *>posmods, EffectColor* color, ColorMode mode=CMODE_Set);
+            Shape(LightArray* ar, RectArea box, PositionModifiers posmods, EffectColor* color, ColorMode mode=CMODE_Set, ColorModifiers colmods={}, int8_t opacity=100)
+                     : ar(ar), box(box), posmods(posmods), colmods(colmods), color(color), mode_color(mode), opacity(opacity) {
                 LOG("Shape: Construct");
             }
 
@@ -50,7 +49,7 @@ namespace prgbfx {
             /// @brief this applies the PositionModifiers and calls draw.
             /// @param time_delta 
             void drawmod(TimeMS time_delta){
-                RectArea modarea = RectArea(origin, size);
+                RectArea modarea = box;
                 
                 for (auto pmod : posmods) {
                     modarea = pmod->calc_shape(time_delta,modarea.origin,modarea.size);
@@ -61,18 +60,21 @@ namespace prgbfx {
 
             /// @brief  changes the origin
             /// @param origin 
-            void setOrigin(Point origin) { this->origin = origin; }
+            void set_origin(Point origin) { this->box.origin = origin; }
 
-            inline Point get_origin() { return origin; };
-            inline Size get_size() { return size; };
+            /// @brief  Set the opacity
+            /// @param opacity 100 means the object has no transparence
+            void set_opacity(int8_t opacity) { this->opacity = opacity; }
+
+            inline Point get_origin() { return box.origin; };
+            inline Size get_size() { return box.size; };
 
         protected:
-            LightArray& ar;
-            Point origin;
-            Size size;
+            LightArray* ar;
+            RectArea box;
             PositionModifiers posmods = PositionModifiers ();
             ColorModifiers  colmods = ColorModifiers  ();
-            EffectColor& color;
+            EffectColor* color;
             ColorMode mode_color;
             uint8_t opacity = 100;
 
@@ -93,7 +95,7 @@ namespace prgbfx {
     struct RectInit {
         RectArea box;
         PositionModifiers       posmods;
-        EffectColor&            color;
+        EffectColor*            color;
         ColorMode               colormode   {CMODE_Set};
         ColorModifiers          colmods;
         int8_t                  opacity     {100};
@@ -103,21 +105,21 @@ namespace prgbfx {
     class Rect : public Shape {
 
         public:
-            Rect(LightArray& ar, const RectInit& ri) 
+            Rect(LightArray* ar, const RectInit& ri) 
                 : Shape(ar,ri.box,ri.posmods,ri.color, ri.colormode, ri.colmods, ri.opacity) {LOG(" Rect: Construct");}
 
-            Rect(LightArray& ar,RectArea box, PositionModifiers posmods, EffectColor& color, ColorMode mode=CMODE_Set, ColorModifiers colmods ={}, int8_t opacity=100)
+            Rect(LightArray* ar,RectArea box, PositionModifiers posmods, EffectColor* color, ColorMode mode=CMODE_Set, ColorModifiers colmods ={}, int8_t opacity=100)
                 : Shape(ar,box,posmods,color, mode, colmods, opacity) {LOG(" Rect: Construct"); }
             
             virtual ~Rect() {LOG(" Rect: Destruct");}
 
             virtual void draw(Point origin, Size size, TimeMS time_delta){
-                ColorValue color_current = color.get_color(time_delta);
+                ColorValue color_current = color->get_color(time_delta);
                 ColorValue color_new = get_color(time_delta, color_current);
                 
                 for (uint16_t cx = 0; cx < size.w; cx++) {
                     for (uint16_t cy = 0; cy < size.h; cy++) {
-                        ar.set_pixel(Point(cx+origin.x,cy+origin.y),color_new,mode_color,opacity);
+                        ar->set_pixel(Point(cx+origin.x,cy+origin.y),color_new,mode_color,opacity);
                     }
                 }   
             }
@@ -129,7 +131,7 @@ namespace prgbfx {
     struct FrameInit {
         RectArea            box;
         PositionModifiers   posmods;
-        EffectColor&        color;
+        EffectColor*        color;
         ColorMode           mode        {CMODE_Set};
         ColorModifiers      colmods;
         Dimension           width_frame {1};
@@ -144,28 +146,28 @@ namespace prgbfx {
         Dimension width_frame;
 
         public:
-            Frame(LightArray& ar, FrameInit fi)
+            Frame(LightArray* ar, const FrameInit fi)
                 : Shape(ar,fi.box,fi.posmods,fi.color,fi.mode,fi.colmods,fi.opacity), width_frame(fi.width_frame) {LOG(" Frame: Create");};
 
-            Frame(LightArray& ar, RectArea box, PositionModifiers posmods, EffectColor& color, ColorMode mode,ColorModifiers colmods,Dimension width_frame=1, int8_t opacity=100) 
+            Frame(LightArray* ar, RectArea box, PositionModifiers posmods, EffectColor* color, ColorMode mode,ColorModifiers colmods,Dimension width_frame=1, int8_t opacity=100) 
                 : Shape(ar,box,posmods,color,mode,colmods,opacity), width_frame(width_frame) {LOG(" Frame: Create");};
 
             virtual void draw(Point origin, Size size, TimeMS time_delta) {
-                ColorValue color_current = color.get_color(time_delta);
+                ColorValue color_current = color->get_color(time_delta);
                 ColorValue color_new = get_color(time_delta, color_current);
 
                 if ((size.h < 2) || (size.w < 2) ) return;
 
                 for (int j = 0; j < std::min(width_frame,(Dimension) (size.h/2)); j++) {
                     for (int i=0;i < size.w; i++) {
-                        ar.set_pixel(Point(origin.x+i,origin.y+j),color_new,mode_color,opacity);
-                        ar.set_pixel(Point(origin.x+i,origin.y+size.h-j-1),color_new,mode_color,opacity);
+                        ar->set_pixel(Point(origin.x+i,origin.y+j),color_new,mode_color,opacity);
+                        ar->set_pixel(Point(origin.x+i,origin.y+size.h-j-1),color_new,mode_color,opacity);
                     }
                 }
                 for (int i=0; i< std::min(width_frame,(Dimension)(size.w/2)); i++) {
                     for (int j=width_frame; j<size.h-width_frame; j++) {
-                        ar.set_pixel(Point(origin.x+i,origin.y+j),color_new,mode_color,opacity);
-                        ar.set_pixel(Point(origin.x+size.w-i-1,origin.y+j),color_new,mode_color,opacity);
+                        ar->set_pixel(Point(origin.x+i,origin.y+j),color_new,mode_color,opacity);
+                        ar->set_pixel(Point(origin.x+size.w-i-1,origin.y+j),color_new,mode_color,opacity);
                     }
                 }
             }
@@ -176,7 +178,7 @@ namespace prgbfx {
     struct CircleInit {
         RectArea            box;
         PositionModifiers   posmods;
-        EffectColor&        color;
+        EffectColor*        color;
         ColorMode           mode        {CMODE_Set};
         ColorModifiers      colmods;
         int8_t              opacity     {100};
@@ -187,32 +189,45 @@ namespace prgbfx {
             Point center; 
 
             public:
-                Circle(LightArray& ar, CircleInit ci) 
-                    : Shape(ar,ci.box,ci.posmods,ci.color,ci.mode,ci.colmods,ci.opacity),center(ci.box.size.w*10/2-1,ci.box.size.h*10/2-1) { 
+                Circle(LightArray* ar, const CircleInit ci) 
+                    : Shape(ar,ci.box,ci.posmods,ci.color,ci.mode,ci.colmods,ci.opacity),center(ci.box.size.w/2-1,ci.box.size.h/2-1) { 
                     };
+
+                Circle(const Circle& orig) : Shape(orig.ar,orig.box,orig.posmods,orig.color, orig.mode_color, orig.colmods, orig.opacity), center(orig.center) {};
 
                 virtual void draw(Point origin, Size size, TimeMS time_delta) {
 
                     if ((center.x == 0) || (center.y == 0)) return;
 
-                    ColorValue color_current = color.get_color(time_delta);
+                    ColorValue color_current = color->get_color(time_delta);
                     ColorValue color_new = get_color(time_delta, color_current);
 
-                    for (int i=0; i<= size.w; i++) {
-                        for(int j=0; j <= size.h; j++) {
-                            Dimension x = abs(center.x - i*10);
-                            Dimension y = abs(center.y - j*10);
-                            if (10*x*x/(center.x*center.x) + 10*y*y/(center.y*center.y) <= 10) {
-                                Point p1 = Point(origin.x+i,origin.y+j);
-                                ar.set_pixel(Point(p1.x,p1.y),color_new,mode_color,opacity);
-                            }
+                    // for (int i=0; i<= size.w; i++) {
+                    //     for(int j=0; j <= size.h; j++) {
+                    //         Dimension x = abs(center.x - i*10);
+                    //         Dimension y = abs(center.y - j*10);
+                    //         if (10*x*x/(center.x*center.x) + 10*y*y/(center.y*center.y) <= 10) {
+                    //             Point p1 = Point(origin.x+i,origin.y+j);
+                    //             ar->set_pixel(Point(p1.x,p1.y),color_new,mode_color,opacity);
+                    //         }
+                    //     }
+                    // }
 
+                    int32_t height = (int32_t)size.h/2+(size.h&1);
+                    int32_t width = (int32_t)size.w/2+(size.w&1);
+
+                    int32_t hh = height*height;
+                    int32_t ww = width*width;
+                    
+                    int32_t h2w2 = height*height*width*width;
+
+                    for(int32_t y=-height; y<=height; y++) {
+                        for(int32_t x=-width; x<=width; x++) {
+                            if(x*x*hh+y*y*ww <= h2w2)
+                                ar->set_pixel(Point(origin.x+width+x,origin.y+height+y),color_new,mode_color,opacity);
                         }
                     }
                 }
-                
-
-
     };
 
 };
