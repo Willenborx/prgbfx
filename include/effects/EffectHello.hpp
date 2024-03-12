@@ -2,10 +2,10 @@
  * @file EffectHello.hpp
  * @author Holger Willenborg (holger@willenb.org)
  * @brief Hello Effecft demonstration
- * @version 0.5
- * @date 2023-11-01
+ * @version 0.6
+ * @date 2024-03-12
  * 
- * @copyright Copyright (c) 2023
+ * @copyright Copyright (c) 2024
  * 
  */
 

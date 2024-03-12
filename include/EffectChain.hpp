@@ -2,11 +2,11 @@
  * @file EffectChain.hpp
  * @author Holger Willenborg (holger@willenb.org)
  * @brief THe EffectChain manages a list of effects. 
- * @version 0.5
- * @date 2023-11-01
+ * @version 0.6
+ * @date 2024-03-12
  * 
- * @copyright Copyright (c) 2023
- * 
+ * @copyright Copyright (c) 2024
+  * 
  */
 
 #ifndef PRGB_EFFECTCHAIN_HPP

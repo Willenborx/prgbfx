@@ -2,10 +2,10 @@
  * @file EffectSparkle.hpp
  * @author Holger Willenborg (holger@willenb.org)
  * @brief Add sparkles to the output.
- * @version 0.1
- * @date 2023-05-26
+ * @version 0.2
+ * @date 2024-03-12
  * 
- * @copyright Copyright (c) 2023
+ * @copyright Copyright (c) 2024
  * 
  */
 #ifndef EffectSparkle_hpp

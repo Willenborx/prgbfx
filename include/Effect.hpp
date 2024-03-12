@@ -2,11 +2,11 @@
  * @file Effect.hpp
  * @author Holger Willenborg (holger@willenb.org)
  * @brief Implementation of an "effect". The calculateEffect member function will be called to draw the effect depending on the current timestamp
- * @version 0.5
- * @date 2023-11-01
+ * @version 0.6
+ * @date 2024-03-12
  * 
- * @copyright Copyright (c) 2023
- * 
+ * @copyright Copyright (c) 2024
+ 
  */
 
 #ifndef PRGB_EFFECT_HPP

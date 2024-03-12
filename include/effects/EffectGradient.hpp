@@ -2,11 +2,11 @@
  * @file EffectGradient.hpp
  * @author Holger Willenborg (holger@willenb.org)
  * @brief Effect to fill a rectangular section with color gradient from a center point (color 1) to a different color (far away from the center)
- * @version 0.5
- * @date 2023-11-01
+ * @version 0.6
+ * @date 2024-03-12
  * 
- * @copyright Copyright (c) 2023
- * 
+ * @copyright Copyright (c) 2024
+  * 
  */
 
 #ifndef EffectGradient_hpp
