@@ -25,7 +25,7 @@ namespace prgbfx
 
             bool kill = false;
 
-            ParticleDot(LightArray* ar,  CircleInit ci, TimeMS item_birth, TimeMS item_lifetime) : circle(ar, ci), item_birth(item_birth), item_lifetime(item_lifetime) {};
+            ParticleDot(LightArray* ar,  CircleInit& ci, TimeMS item_birth, TimeMS item_lifetime) : circle(ar, ci), item_birth(item_birth), item_lifetime(item_lifetime) {};
             ~ParticleDot() { }
              ParticleDot(const ParticleDot& t) : circle(t.circle), item_birth(t.item_birth), item_lifetime(t.item_lifetime) {};
             
@@ -42,7 +42,6 @@ namespace prgbfx
 
         ColorModifierStatic cm_static = ColorModifierStatic(150);
         EffectColorStatic clr_static = EffectColorStatic(RGB(255,255,255));
-        
 
         public:
             EffectDots(LightArray* ar, LoudnessBase &lb, SoundObserver &ob, EffectColor* color, EffectColor* color2) : EffectArrayAbstract(ar), lb(lb), ob(ob), color(color), color2(color2), time(ar->get_timebase().get_deltatime_ms()) { }
@@ -67,27 +66,6 @@ namespace prgbfx
                     additem(ParticleDot(ar,ci,time_delta,100+70*size_dot+rand()%250));
                 }
 
-                // for (auto &item : items) {
-                //         TimeMS current_lifetime = time_delta - item.item_birth;
-                //         if (current_lifetime <= item.item_lifetime) { 
-                //             item.circle.drawmod(time_delta);                        
-                //             item.circle.set_opacity(100-100*current_lifetime/item.item_lifetime);
-                //         } else {
-                //            item.kill = true;
-                //         }
-                // }
-
-                // std::list<ParticleDot>::iterator it = items.begin();
-
-                // while (it != items.end()) {
-
-                //     if (it->kill) {
-                //         it = items.erase(it);
-                //     } else {
-                //         ++it;
-                //     }
-                // }
-
                  for_each([this, time_delta](ParticleDot& item){
                         TimeMS current_lifetime = time_delta - item.item_birth;
                         if (current_lifetime <= item.item_lifetime) { 
@@ -98,8 +76,6 @@ namespace prgbfx
                            return false;
                         }
                  });
-
-
             }
 
 

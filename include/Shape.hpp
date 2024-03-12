@@ -192,8 +192,8 @@ namespace prgbfx {
                 Circle(LightArray* ar, const CircleInit ci) 
                     : Shape(ar,ci.box,ci.posmods,ci.color,ci.mode,ci.colmods,ci.opacity),center(ci.box.size.w/2-1,ci.box.size.h/2-1) { 
                     };
-
-                Circle(const Circle& orig) : Shape(orig.ar,orig.box,orig.posmods,orig.color, orig.mode_color, orig.colmods, orig.opacity), center(orig.center) {};
+                
+                // Circle(const Circle& orig) : Shape(orig.ar,orig.box,orig.posmods,orig.color, orig.mode_color, orig.colmods, orig.opacity), center(orig.center) {};
 
                 virtual void draw(Point origin, Size size, TimeMS time_delta) {
 
