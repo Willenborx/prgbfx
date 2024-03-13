@@ -213,8 +213,8 @@ namespace prgbfx {
                     //     }
                     // }
 
-                    int32_t height = (int32_t)size.h/2+(size.h&1);
-                    int32_t width = (int32_t)size.w/2+(size.w&1);
+                    int32_t height = (int32_t)size.h/2; //+(size.h&1);
+                    int32_t width = (int32_t)size.w/2; //+(size.w&1);
 
                     int32_t hh = height*height;
                     int32_t ww = width*width;
