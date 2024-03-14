@@ -13,6 +13,7 @@
 #define _SOUNDOBSERVER_HPP
 
 #include <LoudnessBase.hpp>
+#include <TimeBase.hpp>
 
 namespace prgbfx {
 
@@ -30,6 +31,7 @@ namespace prgbfx {
         ObserverFlags flags=0;
 
         TimeMS nobass_timestamp = 0;
+        Softener<Loudness> ld_soft = Softener<Loudness>(2000);
 
         double ld_linreq_slope = 0.0;
         double ld_linreq_offset = 0.0;
@@ -40,7 +42,7 @@ namespace prgbfx {
             const static int16_t ld_linreg_sample_count = 10; // number of data points for linear regression
             const static int32_t ld_linreg_sample_length = time_linreg_sample/ld_linreg_sample_count;
 
-            enum ObserverFlag:uint8_t { SO_Silence=0, SO_LoudnessPeak=1, SO_NoBass=2, SO_Buildup=3, SO_FadeOut=4 };
+            enum ObserverFlag:uint8_t { SO_Silence=0, SO_LoudnessPeak=1, SO_NoBass=2, SO_Buildup=3, SO_FadeOut=4, SO_DynamicPeak=5 };
 
             // Array to calculate linear regression of loudness development
             LoudnessDB ld_linreg[ld_linreg_sample_count];
@@ -58,17 +60,29 @@ namespace prgbfx {
 
                     if (nobass_timestamp == 0) nobass_timestamp = tb.get_deltatime_ms();
 
-                    LoudnessDB ld_env = lb.get_loudness_db(LD_environment);
+                    Loudness ld_env = lb.get_loudness(LD_environment);
+                    LoudnessDB ld_env_db =  lb.get_db_value(ld_env);
 
-                    // Quite LD_environment
+                    Loudness ld_real = lb.get_loudness(LD_Band_Bass);
+                    // LoudnessDB ld_real_db = lb.get_db_value(ld_real);
+
+                    // Quite ld_env_dbironment
                     if (lb.is_silent()) {
                         set_flag(SO_Silence);
                     } else if (lb.is_not_silent()) {
                         clear_flag(SO_Silence);
                     }
 
+
+                    
+                    if (ld_soft.value(time_delta,ld_real) == ld_soft.get_value_peak()) {
+                        set_flag(SO_DynamicPeak);
+                    } else {
+                        clear_flag(SO_DynamicPeak);
+                    }
+
                     // \todo hysteresis: Silence -> <60dB, no Silence -> >63dB                    
-                    if (lb.get_loudness_db(LD_Realtime) >= (ld_env + 3.0)) {
+                    if (lb.get_loudness_db(LD_Realtime) >= (ld_env_db + 3.0)) {
                         if (!is_flag_set(SO_Silence)) set_flag(SO_LoudnessPeak);
                     } else {
                         clear_flag(SO_LoudnessPeak);
@@ -76,7 +90,7 @@ namespace prgbfx {
                     }
 
                     
-                    if (lb.get_loudness(LD_Band_Bass) < ld_env) {
+                    if (lb.get_loudness(LD_Band_Bass) < ld_env_db) {
                         if ((time_delta - nobass_timestamp) > time_nobass_threshold) {
                             flags |= (1 << SO_NoBass);
                         }
@@ -94,7 +108,7 @@ namespace prgbfx {
 
                     // time for a new sample?
                     if (idx != ld_linreg_idx) {
-                        ld_linreg[idx] = ld_env;
+                        ld_linreg[idx] = ld_env_db;
                         ld_linreg_ct++;
 
                         // don't start before the entire time span is considered
@@ -127,6 +141,7 @@ namespace prgbfx {
 
                     if (get_ld_linreq_slope() > 1.0) set_flag(SO_Buildup); else clear_flag(SO_Buildup);
                     if (get_ld_linreq_slope() < -1.0) set_flag(SO_FadeOut); else clear_flag(SO_FadeOut);
+
 
             }
 
