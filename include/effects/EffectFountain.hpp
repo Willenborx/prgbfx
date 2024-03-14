@@ -46,7 +46,7 @@ namespace prgbfx {
         EffectColor* color;
 
         RectArea box = ar->get_geometry().get_canvas();
-        Softener<Loudness> ldsoft = Softener<Loudness>(2000);
+        Softener<Loudness> ldsoft = Softener<Loudness>(1000);
 
         public:
             EffectFountain(LightArray* ar, TimeMS time_spawn_delay, LoudnessBase &lb, EffectColor* color) : EffectArrayAbstract(ar), time_spawn_delay(time_spawn_delay), lb(lb), color(color) { }
@@ -60,8 +60,9 @@ namespace prgbfx {
 
                 if (((delta-time_last_spawn) > time_spawn_delay) && enabled) {
                     Loudness ldraw = lb.get_loudness(LD_Realtime);
-                    ldsoft.value(delta,ldraw);
-                    if (lb.get_loudness_db(LD_Realtime) >= (lb.get_loudness_db(LD_environment) + 6.0)) {
+                    Loudness ldsoftval = ldsoft.value(delta,ldraw);
+                    //if (lb.get_loudness_db(LD_Realtime) >= (lb.get_loudness_db(LD_environment) + 6.0)) {
+                    if (ldsoftval == ldsoft.get_value_peak()) {
                         time_last_spawn = delta;
                         int xspeed = sine[(delta*20/1000)%90]/5;
                         int yspeed = (int) sqrt(45*45-xspeed*xspeed);

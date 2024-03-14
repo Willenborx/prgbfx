@@ -82,7 +82,7 @@ namespace prgbfx
         private:
             bool check_trigger(TimeMS time_delta) {
                 //if ((last_triggered) == 0 || ((time_delta - last_triggered) > 250)) {
-                if (ob.is_flag_set(SoundObserver::SO_LoudnessPeak) && (time_delta - last_triggered > 40)) {
+                if (ob.is_flag_set(SoundObserver::SO_DynamicPeak) && (time_delta - last_triggered > 10)) {
                     last_triggered = time_delta;
                     return true;
                 } else return false;
