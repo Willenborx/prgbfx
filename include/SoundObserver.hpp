@@ -72,8 +72,6 @@ namespace prgbfx {
                     } else if (lb.is_not_silent()) {
                         clear_flag(SO_Silence);
                     }
-
-
                     
                     if (ld_soft.value(time_delta,ld_real) == ld_soft.get_value_peak()) {
                         set_flag(SO_DynamicPeak);
