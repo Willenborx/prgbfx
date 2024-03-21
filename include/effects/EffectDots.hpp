@@ -63,7 +63,7 @@ namespace prgbfx
                                 .opacity = 100
                             });
 
-                    additem(ParticleDot(ar,ci,time_delta,100+70*size_dot+rand()%250));
+                    additem(ParticleDot(ar,ci,time_delta,100+70*size_dot+rand()%500));
                 }
 
                  for_each([this, time_delta](ParticleDot& item){
@@ -82,7 +82,7 @@ namespace prgbfx
         private:
             bool check_trigger(TimeMS time_delta) {
                 //if ((last_triggered) == 0 || ((time_delta - last_triggered) > 250)) {
-                if (ob.is_flag_set(SoundObserver::SO_LoudnessPeak) && (time_delta - last_triggered > 40)) {
+                if (ob.is_flag_set(SoundObserver::SO_LoudnessPeak) && (time_delta - last_triggered > 30)) {
                     last_triggered = time_delta;
                     return true;
                 } else return false;
