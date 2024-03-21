@@ -78,8 +78,8 @@ namespace prgbfx {
     class PositionModifierSine : public PositionModifier {
 
         public:
-            PositionModifierSine(LightArray *ar, RectArea box, Point initial, TimeMS delay_x_ms, TimeMS delay_y_ms) 
-                : PositionModifier(ar), initial(initial), delay_x_ms(delay_x_ms), delay_y_ms(delay_y_ms), box(box)
+            PositionModifierSine(LightArray *ar, RectArea box, int16_t deg_x, int16_t deg_y, TimeMS delay_x_ms, TimeMS delay_y_ms) 
+                : PositionModifier(ar), deg_x(deg_x), deg_y(deg_y), delay_x_ms(delay_x_ms), delay_y_ms(delay_y_ms), box(box)
                 {LOG(" PositionModifierSine: Construct");};
             virtual ~PositionModifierSine() {LOG(" PositionModifierSine: Destruct");}
             virtual RectArea calc_shape(TimeMS time_delta, Point origin, Size size) 
@@ -87,18 +87,24 @@ namespace prgbfx {
                     Point origin_mod = origin;
                     if (delay_x_ms != 0) {
                         Dimension width = box.size.w - size.w; 
-                        TimeMS calctime = time_delta+delay_x_ms*(initial.x - box.origin.x)/box.size.w;
-                        origin_mod.x =sine[(calctime % delay_x_ms)*90/delay_x_ms]*width/200+width/2; 
+
+                        TimeMS calctime = time_delta+delay_x_ms*(0 - box.origin.x)/box.size.w;
+
+                        int16_t idx = (deg_x/4+(calctime % delay_x_ms)*90/delay_x_ms) % 90;
+
+                        origin_mod.x =sine[idx]*width/200+width/2; 
                     }
                     if (delay_y_ms != 0) {
                         Dimension height = box.size.h - size.h;
-                        origin_mod.y=sine[(time_delta % delay_y_ms)*90/delay_y_ms]*height/200+height/2; 
+                        int16_t idx = (deg_y/4+(time_delta % delay_y_ms)*90/delay_y_ms) % 90;
+                        origin_mod.y=sine[idx]*height/200+height/2; 
                     }
                     return(RectArea(origin_mod,size));
                 } 
 
         private:
-            Point initial;
+            // Point initial;
+            int16_t deg_x, deg_y;
             TimeMS delay_x_ms, delay_y_ms;
             RectArea box;
     };
@@ -121,10 +127,9 @@ namespace prgbfx {
                 Size size_mod = size;
 
                 Loudness 
-                    env = lb.get_loudness(LD_environment),
                     loud = lb.get_loudness(ldmode);
 
-                if (env > 25) {
+                if (!lb.is_silent()) {
                     Loudness ld_ref = sft_ld_ref.value(time_delta,loud);
 
                     if (slmodew != SIZELD_Static)
@@ -175,6 +180,18 @@ namespace prgbfx {
             Softener<Loudness> sft_ld_w = Softener<Loudness>(glow), ldsofth = Softener<Loudness>(glow);
 
   };
+
+class PositionModifierResize : public PositionModifier {
+    public:
+        PositionModifierResize(LightArray *ar, Size size_delta, Size size_min) : PositionModifier(ar), size_delta(size_delta), size_min(size_min) {};
+        RectArea calc_shape(TimeMS time_delta, Point origin, Size size) {
+            Dimension new_w = (size.w+size_delta.w > size_min.w) ? size.w + size_delta.w : 0;
+            Dimension new_h = (size.h+size_delta.h > size_min.h) ? size.h + size_delta.h : 0;
+            return (RectArea(origin,Size(new_w,new_h)));
+        }
+    protected:
+        Size size_delta, size_min;
+};
 
   /// @brief resizes a shape if dimension falls below a minimum size
   class PositionModifierMinSize : public PositionModifier {
