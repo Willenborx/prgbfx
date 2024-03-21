@@ -56,7 +56,7 @@ namespace prgbfx {
             ///        to select the next effect 
             ///         \todo implement this
             /// @param time_delta 
-            void collectSoundData(TimeMS time_delta) {
+            void collect_sound_data(TimeMS time_delta) {
 
                     if (nobass_timestamp == 0) nobass_timestamp = tb.get_deltatime_ms();
 

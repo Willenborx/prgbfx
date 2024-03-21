@@ -66,7 +66,7 @@ namespace prgbfx {
                         time_last_spawn = delta;
                         int xspeed = sine[(delta*20/1000)%90]/5;
                         int yspeed = (int) sqrt(45*45-xspeed*xspeed);
-                        additem(FountainParticle({
+                        add_item(FountainParticle({
                                     Point((xspeed > 0) ? box.size.w/8 : 7*box.size.w/8,1),
                                     xspeed,
                                     yspeed,

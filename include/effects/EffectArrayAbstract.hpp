@@ -37,12 +37,12 @@ namespace prgbfx {
             /// This list holds all items that have to be displayed
             std::list<T> items = std::list<T>();
 
-            inline void additem(const T item) { items.push_back(item);}
+            inline void add_item(const T item) { items.push_back(item);}
 
             /// @brief  Removes an item (during an interation)
             /// @param it THe iterator
             /// @return the iterator of the next element
-            typename std::list<T>::iterator removeitem(typename std::list<T>::iterator it) { return items.erase(it);  }
+            typename std::list<T>::iterator remove_item(typename std::list<T>::iterator it) { return items.erase(it);  }
             
             /**
              * @brief This can be used along with a lambda to calculate each individual item in the array

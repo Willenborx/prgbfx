@@ -75,7 +75,7 @@ namespace prgbfx {
                     ar->commit_buffer();
 
                     // collect sound data into the observer
-                    observe.collectSoundData(delta);
+                    observe.collect_sound_data(delta);
 
                     post_frame(delta);
                     fx_chain->post_frame(delta);

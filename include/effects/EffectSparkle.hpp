@@ -82,7 +82,7 @@ namespace prgbfx {
 
 //                    for (int32_t i = 0; i < std::min(num_sparks,(int32_t) 100) ; i++) { // #desperate attempt to fix a crash
                     for (int32_t i = 0; i < num_sparks ; i++) { 
-                        additem     (Spark(
+                        add_item     (Spark(
                                         {   
                                             Point(rand()%box.size.w,rand()%box.size.h),
                                             time_delta,
