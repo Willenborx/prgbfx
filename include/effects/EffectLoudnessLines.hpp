@@ -44,6 +44,7 @@ namespace prgbfx
                 Dimension extent = get_extent();
                 Loudness ld_now = lb.get_loudness(LD_Band_Bass);
                 int16_t fadeval = (100*ld_now) / softfade.value(time_delta,ld_now) ;
+                fadeval = fadeval * fadeval / 100;
 
                 TimeMS position = time_delta % (delay_ms*extent); // cut to time window required to fill all lines
 
@@ -98,7 +99,7 @@ namespace prgbfx
             const ColorModifiers colmods;
             const ColorModifiers colbgmods;
 
-            Softener<uint16_t> softfade = Softener<uint16_t>(100);
+            Softener<uint16_t> softfade = Softener<uint16_t>(1000);
     };
 }
 #endif

@@ -23,7 +23,7 @@ using namespace prgbfx;
 const uint32_t relationTime = 60000;
 
 class EffectVUMeter : public Effect {
-    Softener<Loudness> bandsoft[6], bandrelation[6], mxsoft = Softener<Loudness>(2000);
+    Softener<Loudness> bandsoft[6], bandrelation[6], mxsoft = Softener<Loudness>(1000);
     Loudness bandval[2][6];
     uint8_t current = 0;
     Dimension distance, offset;
@@ -53,7 +53,7 @@ class EffectVUMeter : public Effect {
                 bandval[current][i] = lb.get_freq_band(i);
                 if (bandval[current][i] > maxld) maxld = bandval[current][i]; 
             }
-            maxld = 4000; // #ugly
+            maxld = (3*lb.get_loudness(LD_environment))/2;
 
             if (!enabled) return;
 

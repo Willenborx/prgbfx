@@ -63,7 +63,7 @@ namespace prgbfx
                                 .opacity = 100
                             });
 
-                    additem(ParticleDot(ar,ci,time_delta,100+70*size_dot+rand()%250));
+                    additem(ParticleDot(ar,ci,time_delta,100+70*size_dot+rand()%500));
                 }
 
                  for_each([this, time_delta](ParticleDot& item){
