@@ -60,13 +60,18 @@ namespace prgbfx {
             EffectSparkle(LightArray* ar, LoudnessBase& lb, const RectArea& box, uint16_t density, EffectColor* color, ColorModifiers colmods, TimeMS min_spark_duration=20, TimeMS max_spark_duration=180) 
                     : EffectArrayAbstract(ar), lb(lb), box(box), density(density), color(color), colmods(colmods),min_spark_duration(min_spark_duration), max_spark_duration(max_spark_duration) { 
                 avg_spark_duration = min_spark_duration + (max_spark_duration-min_spark_duration)/2;
-                delay_sparkles1000 = (int32_t)(((int64_t)1000*1000*avg_spark_duration) / (int64_t) (box.size.h*box.size.w*density));
-                delay_sparkles = delay_sparkles1000 / 1000;
-                
+                //delay_sparkles1000 = (int32_t)(((int64_t)1000*1000*avg_spark_duration) / (int64_t) (box.size.h*box.size.w*density));
+                //delay_sparkles = delay_sparkles1000 / 1000;
+                set_density(density);
                 LOG("  EffectSparkle: Construct");
             }
 
             virtual ~EffectSparkle() {LOG("  EffectSparkle: Destruct");}
+
+            void set_density(uint16_t density) { 
+                delay_sparkles1000 = (int32_t)(((int64_t)1000*1000*avg_spark_duration) / (int64_t) (box.size.h*box.size.w*density));
+                delay_sparkles = delay_sparkles1000 / 1000;
+            }
 
             virtual void render_effect(TimeMS time_delta) {
 
