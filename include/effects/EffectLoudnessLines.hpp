@@ -54,7 +54,7 @@ namespace prgbfx
                 for (auto cmod : colbgmods) { 
                     color_bgnew = cmod->modify(color_bgnew,time_delta);
                 }
-                ColorValue color_new = prgb::gradient(color_bgnew,color->get_color(time_delta),fadeval,100);
+                ColorValue color_new = prgb::gradient(color_bgnew,color->get_color(time_delta),(fadeval > 30) ? 30 : fadeval,30);
                 for (auto cmod : colmods) { 
                     color_new = cmod->modify(color_new,time_delta); 
                 }
