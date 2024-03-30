@@ -47,6 +47,9 @@ namespace prgbfx
             EffectDots(LightArray* ar, LoudnessBase &lb, SoundObserver &ob, EffectColor* color, EffectColor* color2) : EffectArrayAbstract(ar), lb(lb), ob(ob), color(color), color2(color2), time(ar->get_timebase().get_deltatime_ms()) { }
         
             void render_effect(TimeMS time_delta) {
+
+                if (!enabled) return;
+
                 if (check_trigger(time_delta)) {
 
                     Size size_canvas = ar->get_geometry().get_canvas_size();
@@ -77,6 +80,7 @@ namespace prgbfx
                         }
                  });
             }
+
 
 
         private:
