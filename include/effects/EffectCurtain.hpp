@@ -25,9 +25,10 @@ namespace prgbfx
             ColorValue color;
             Point pt_current; 
             u_int8_t trail;
+            int opacity;
 
-            CurtainThread(TimeMS time_birth, TimeMS delay_y, ColorValue color, Point pt_current, uint8_t trail=3) 
-                : time_birth(time_birth), delay_y(delay_y), color(color), pt_current(pt_current), trail(trail) {
+            CurtainThread(TimeMS time_birth, TimeMS delay_y, ColorValue color, Point pt_current, uint8_t trail=3, int opacity=100) 
+                : time_birth(time_birth), delay_y(delay_y), color(color), pt_current(pt_current), trail(trail), opacity(opacity) {
                 
             };
 
@@ -65,7 +66,7 @@ namespace prgbfx
                 // manage items
                 if (x != x_last) {
                     x_last = x;
-                    add_item(CurtainThread(time_delta,rand()%25+30,color->get_color(time_delta),Point(x,rect.size.h),trail));
+                    add_item(CurtainThread(time_delta,rand()%25+30,prgb::dim(color->get_color(time_delta),200),Point(x,rect.size.h),trail,ob.get_ld_0_100()));
 
                 }
 
@@ -77,7 +78,7 @@ namespace prgbfx
                     {
                         int opacity = (100*(item.trail-i-1))/item.trail;
                         //int opacity = 100;
-                        if ((item.pt_current.y+i < rect.size.h) && item.pt_current.y+i >= 0) ar->set_pixel(item.pt_current.translate(rect.origin).translate(0,i),item.color,CMODE_Transparent,opacity);
+                        if ((item.pt_current.y+i < rect.size.h) && item.pt_current.y+i >= 0) ar->set_pixel(item.pt_current.translate(rect.origin).translate(0,i),item.color,CMODE_Transparent,item.opacity*opacity/100);
                     }
                     return (item.pt_current.y+item.trail > 0);
 

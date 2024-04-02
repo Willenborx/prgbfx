@@ -32,9 +32,12 @@ namespace prgbfx {
 
         TimeMS nobass_timestamp = 0;
         Softener<Loudness> ld_soft = Softener<Loudness>(2000);
+        Softener<Loudness> ld_norm = Softener<Loudness>(250);
+        Softener<int> ld_0_100soft = Softener<int>(150);
 
         double ld_linreq_slope = 0.0;
         double ld_linreq_offset = 0.0;
+        int ld0_100 = 0;
 
         public:
             const static TimeMS time_nobass_threshold = 4000; // time span to detect a fade out / build up
@@ -62,9 +65,24 @@ namespace prgbfx {
 
                     Loudness ld_env = lb.get_loudness(LD_environment);
                     LoudnessDB ld_env_db =  lb.get_db_value(ld_env);
+                    Loudness ld_real = lb.get_loudness(LD_Realtime);
 
-                    Loudness ld_real = lb.get_loudness(LD_Band_Bass);
-                    // LoudnessDB ld_real_db = lb.get_db_value(ld_real);
+
+                    // dynamic peak is when the current value exceeds the softenend old peak
+                    if (ld_soft.value(time_delta,ld_real) == ld_soft.get_value_peak()) {
+                        set_flag(SO_DynamicPeak);
+                    } else {
+                        clear_flag(SO_DynamicPeak);
+                    }
+
+                    // try to normalize loudness to a value between 0-100
+                    // expect dynamic range of +/- 10 dB
+                    double ld_delta_db = (lb.get_db_value(ld_norm.value(time_delta,ld_real)) - lb.get_db_value(ld_env)) + 10; // current softened real value against env value
+
+                    ld_delta_db = 5* ((ld_delta_db < 0) ? 0 : (ld_delta_db > 20) ? 20 : ld_delta_db); 
+
+                    ld0_100 = ld_0_100soft.value(time_delta, static_cast<Loudness>(ld_delta_db));
+                    ld0_100 = ld0_100 * ld0_100 / 100;
 
                     // Quite ld_env_dbironment
                     if (lb.is_silent()) {
@@ -73,12 +91,6 @@ namespace prgbfx {
                         clear_flag(SO_Silence);
                     }
                     
-                    if (ld_soft.value(time_delta,ld_real) == ld_soft.get_value_peak()) {
-                        set_flag(SO_DynamicPeak);
-                    } else {
-                        clear_flag(SO_DynamicPeak);
-                    }
-
                     // \todo hysteresis: Silence -> <60dB, no Silence -> >63dB                    
                     if (lb.get_loudness_db(LD_Realtime) >= (ld_env_db + 3.0)) {
                         if (!is_flag_set(SO_Silence)) set_flag(SO_LoudnessPeak);
@@ -87,7 +99,7 @@ namespace prgbfx {
                         clear_flag(SO_NoBass);
                     }
 
-                    
+                    //  detect missing bass tones
                     if (lb.get_loudness(LD_Band_Bass) < ld_env_db) {
                         if ((time_delta - nobass_timestamp) > time_nobass_threshold) {
                             flags |= (1 << SO_NoBass);
@@ -156,6 +168,10 @@ namespace prgbfx {
 
             inline void clear_flag(ObserverFlag flag) {
                 flags &= ~(1 << flag);
+            }
+
+            inline int16_t get_ld_0_100() {
+                return (ld0_100);
             }
 
         protected:

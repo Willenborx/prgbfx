@@ -9,6 +9,9 @@
  * 
  */
 
+#ifndef EFFECDOTS_HPP
+#define EFFECDOTS_HPP
+
 #include <EffectArrayAbstract.hpp>
 
 namespace prgbfx
@@ -96,3 +99,4 @@ namespace prgbfx
     };
     
 } // namespace prgbfx
+#endif

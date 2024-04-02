@@ -30,6 +30,7 @@ namespace prgbfx {
         Point origin;
         TimeMS time_start;
         TimeMS delay;
+        ColorValue color;
     };
 
     /**
@@ -87,11 +88,18 @@ namespace prgbfx {
 
 //                    for (int32_t i = 0; i < std::min(num_sparks,(int32_t) 100) ; i++) { // #desperate attempt to fix a crash
                     for (int32_t i = 0; i < num_sparks ; i++) { 
+                        ColorValue color_new = color->get_color(time_delta);
+
+                        for (auto cmod : colmods) {
+                                color_new = cmod->modify(color_new,time_delta);
+                        }
+
                         add_item     (Spark(
                                         {   
                                             Point(rand()%box.size.w,rand()%box.size.h),
                                             time_delta,
-                                            min_spark_duration+rand()%(max_spark_duration-min_spark_duration)
+                                            min_spark_duration+rand()%(max_spark_duration-min_spark_duration),
+                                            color_new
                                         }
                                     ));
                     }
@@ -100,14 +108,13 @@ namespace prgbfx {
 
                 hibernate = !enabled;
 
-                ColorValue color_new = color->get_color(time_delta);
 
-                for (auto cmod : colmods) {
-                        color_new = cmod->modify(color_new,time_delta);
-                }
+                // for (auto cmod : colmods) {
+                //         color_new = cmod->modify(color_new,time_delta);
+                // }
                 LOG("  EffectSparkle: Start output: Size -> "+std::to_string(items.size()));
                 
-                for_each([this, time_delta, color_new](Spark& spark){
+                for_each([this, time_delta](Spark& spark){
                     if (time_delta-spark.time_start >= spark.delay) {
                         // LOG("  EffectSparkle: Erase Spark");
                         return false;
@@ -119,7 +126,7 @@ namespace prgbfx {
 
                         ar->set_pixel(
                                 Point(spark.origin.x+box.origin.x,spark.origin.y+box.origin.y),
-                                color_new,
+                                spark.color,
                                 CMODE_Transparent,
                                 (int8_t) opacity);
                         return true;
