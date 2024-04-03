@@ -55,7 +55,7 @@ namespace prgbfx {
                 ///        implemented in derived classes to do specific actions during the run. runScene needs to be run in an infinite loop
                 ///        that checks is_stopped(). runScene uses the active EffectChain
                 void runScene() {
-                    ar->fill_all(RGBW(0,0,0,0));
+                    ar->fill_all(RGBA(0,0,0,255));
                     TimeMS delta = tb.get_deltatime_ms();
 
                     pre_frame(delta);
