@@ -1,5 +1,5 @@
 /**
- * @file EffectDots.hpp
+ * @file EffectSpit.hpp
  * @author Holger Willenborg (holger@willenb.org)
  * @brief 
  * @version 0.1
