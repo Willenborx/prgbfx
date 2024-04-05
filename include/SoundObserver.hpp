@@ -174,6 +174,10 @@ namespace prgbfx {
                 return (ld0_100);
             }
 
+            inline uint8_t get_ld_0_255() {
+                return((ld0_100 * 255) / 100); ///TODO: ugly
+            }
+
         protected:
             Loudness loudness_last_avg = 0;
 
