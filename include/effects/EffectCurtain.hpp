@@ -42,6 +42,8 @@ namespace prgbfx
 
         RectArea& rect;
         EffectColor *color;
+        ColorModifiers colmods = ColorModifiers();
+
         TimeMS delay_x;
         TimeMS delay_y;
         uint8_t trail;
@@ -52,8 +54,8 @@ namespace prgbfx
         Dimension x_last = 5555;
 
         public:
-            EffectCurtain(LightArray* ar, LoudnessBase &lb, SoundObserver &ob, RectArea& rect, EffectColor* color, TimeMS delay_x=100, TimeMS delay_y=100, uint8_t trail=3) 
-                : EffectArrayAbstract(ar), lb(lb), ob(ob), rect(rect), color(color), delay_x(delay_x), delay_y(delay_y),trail(trail) { 
+            EffectCurtain(LightArray* ar, LoudnessBase &lb, SoundObserver &ob, RectArea& rect, EffectColor* color, ColorModifiers colmods={}, TimeMS delay_x=100, TimeMS delay_y=100, uint8_t trail=3) 
+                : EffectArrayAbstract(ar), lb(lb), ob(ob), rect(rect), color(color), colmods(colmods), delay_x(delay_x), delay_y(delay_y),trail(trail) { 
                     time_start = ar->get_timebase().get_deltatime_ms();
                 }
         
@@ -66,9 +68,25 @@ namespace prgbfx
                 // manage items
                 if (x != x_last) {
                     x_last = x;
-                    add_item(CurtainThread(time_delta,rand()%25+30,prgb::dim(color->get_color(time_delta),200),Point(x,rect.size.h),trail,ob.get_ld_0_100()));
+
+                    ColorValue color_new = color->get_color(time_delta);
+
+                    for (auto cmod : colmods) {
+                            color_new = cmod->modify(color_new,time_delta);
+                    }
+
+                    add_item(
+                        CurtainThread(
+                            time_delta,
+                            rand()%25+30,
+                            modA(color_new,ob.get_ld_0_255()),
+                            Point(x,rect.size.h),
+                            trail
+                        )
+                    );
 
                 }
+           
 
                  // draw 
                  for_each([this, time_delta](CurtainThread& item){
@@ -76,9 +94,9 @@ namespace prgbfx
                     item.pt_current.y = rect.size.h-(time_delta-item.time_birth)/item.delay_y-1;
                     for (int i=0; i < item.trail;i++)
                     {
-                        int opacity = (100*(item.trail-i-1))/item.trail;
-                        //int opacity = 100;
-                        if ((item.pt_current.y+i < rect.size.h) && item.pt_current.y+i >= 0) ar->set_pixel(item.pt_current.translate(rect.origin).translate(0,i),item.color,CMODE_Transparent,item.opacity*opacity/100);
+                        int alpha = (A(item.color)*(item.trail-i-1))/item.trail;
+                        
+                        if ((item.pt_current.y+i < rect.size.h) && item.pt_current.y+i >= 0) ar->set_pixel(item.pt_current.translate(rect.origin).translate(0,i),modA(item.color,alpha),CMODE_Alpha);
                     }
                     return (item.pt_current.y+item.trail > 0);
 
