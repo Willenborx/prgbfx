@@ -33,11 +33,12 @@ namespace prgbfx {
         TimeMS nobass_timestamp = 0;
         Softener<Loudness> ld_soft = Softener<Loudness>(2000);
         Softener<Loudness> ld_norm = Softener<Loudness>(250);
-        Softener<int> ld_0_100soft = Softener<int>(150);
+        Softener<int> ld_0_255soft = Softener<int>(150);
 
         double ld_linreq_slope = 0.0;
         double ld_linreq_offset = 0.0;
-        int ld0_100 = 0;
+        int ld0_255 = 0;
+        int ld_delta = 0;
 
         public:
             const static TimeMS time_nobass_threshold = 4000; // time span to detect a fade out / build up
@@ -45,7 +46,7 @@ namespace prgbfx {
             const static int16_t ld_linreg_sample_count = 10; // number of data points for linear regression
             const static int32_t ld_linreg_sample_length = time_linreg_sample/ld_linreg_sample_count;
 
-            enum ObserverFlag:uint8_t { SO_Silence=0, SO_LoudnessPeak=1, SO_NoBass=2, SO_Buildup=3, SO_FadeOut=4, SO_DynamicPeak=5 };
+            enum ObserverFlag:uint8_t { SO_Silence=0, SO_LoudnessPeak=1, SO_NoBass=2, SO_Buildup=3, SO_FadeOut=4, SO_DynamicPeak=5, SO_PeakHigh=6, SO_PeakLow=7 };
 
             // Array to calculate linear regression of loudness development
             LoudnessDB ld_linreg[ld_linreg_sample_count];
@@ -75,20 +76,34 @@ namespace prgbfx {
                         clear_flag(SO_DynamicPeak);
                     }
 
+
+                    Loudness ld_pre = ld_norm.get_value();
+                    Loudness ld_now = ld_norm.value(time_delta,ld_real);
+
+                    // try to see dynamics
+                    double ld_delta_prenow = lb.get_db_value(ld_now) - lb.get_db_value(ld_pre);
+
+
+
                     // try to normalize loudness to a value between 0-100
                     // expect dynamic range of +/- 10 dB
-                    double ld_delta_db = (lb.get_db_value(ld_norm.value(time_delta,ld_real)) - lb.get_db_value(ld_env)) + 10; // current softened real value against env value
+                    double ld_delta_db = (lb.get_db_value(ld_now) - lb.get_db_value(ld_env)) + 10; // current softened real value against env value
+                    ld_delta_db = 13 * ((ld_delta_db < 0) ? 0 : (ld_delta_db > 20) ? 20 : ld_delta_db); 
 
-                    ld_delta_db = 5* ((ld_delta_db < 0) ? 0 : (ld_delta_db > 20) ? 20 : ld_delta_db); 
-
-                    ld0_100 = ld_0_100soft.value(time_delta, static_cast<Loudness>(ld_delta_db));
-                    ld0_100 = ld0_100 * ld0_100 / 100;
+                 ld0_255 = ld_0_255soft.value(time_delta, static_cast<Loudness>(ld_delta_db));
+                 ld0_255 = ld0_255 * ld0_255 / 255;
 
                     // Quite ld_env_dbironment
                     if (lb.is_silent()) {
                         set_flag(SO_Silence);
+                        clear_flag(SO_PeakHigh);
+                        clear_flag(SO_PeakLow);
                     } else if (lb.is_not_silent()) {
                         clear_flag(SO_Silence);
+                        set_flag_state(SO_PeakHigh,(ld_delta_prenow > 9.0));
+                        set_flag_state(SO_PeakLow,(ld_delta_prenow < -9.0));
+                        ld_delta = static_cast<int>(ld_delta_prenow*10.0);
+
                     }
                     
                     // \todo hysteresis: Silence -> <60dB, no Silence -> >63dB                    
@@ -170,12 +185,20 @@ namespace prgbfx {
                 flags &= ~(1 << flag);
             }
 
+            inline void set_flag_state(ObserverFlag flag, bool set) {
+                if (set) set_flag(flag); else clear_flag(flag);
+            }
+
             inline int16_t get_ld_0_100() {
-                return (ld0_100);
+                return  std::min(100,(ld0_255*100)/255);
             }
 
             inline uint8_t get_ld_0_255() {
-                return((ld0_100 * 255) / 100); ///TODO: ugly
+                return ld0_255;
+            }
+
+            inline int get_delta() {
+                return ld_delta;
             }
 
         protected:
